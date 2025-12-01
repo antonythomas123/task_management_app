@@ -3,6 +3,7 @@ import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import { AuthLayout, PrivateRouteLayout } from "../layouts";
 import Dashboard from "../pages/Dashboard";
+import TaskForm from "../components/TaskForm";
 
 const Routes = () => {
   const router = createBrowserRouter([
@@ -18,7 +19,10 @@ const Routes = () => {
     {
       path: "/dashboard",
       Component: PrivateRouteLayout,
-      children: [{ index: true, Component: Dashboard }],
+      children: [
+        { index: true, Component: Dashboard },
+        { path: "new-task", Component: TaskForm },
+      ],
     },
   ]);
 

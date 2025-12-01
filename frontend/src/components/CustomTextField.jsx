@@ -1,7 +1,7 @@
 import { TextField } from "@mui/material";
 import React from "react";
 
-const CustomTextField = ({ name, label, placeholder, type }) => {
+const CustomTextField = ({ name, label, placeholder, type, multiline, minRows }) => {
   return (
     <TextField
       name={name}
@@ -9,6 +9,8 @@ const CustomTextField = ({ name, label, placeholder, type }) => {
       placeholder={placeholder}
       type={type}
       fullWidth
+      multiline={multiline}
+      minRows={minRows}
     />
   );
 };

@@ -11,6 +11,7 @@ import { Add } from "@mui/icons-material";
 import { tasks } from "../data/tasks";
 import moment from "moment";
 import TaskCard from "../components/TaskCard";
+import { useNavigate } from "react-router";
 
 const Header = styled("div")(({ theme }) => ({
   display: "flex",
@@ -27,6 +28,7 @@ const HeaderToolbar = styled("div")(({ theme }) => ({
 }));
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [page, setPage] = React.useState(1);
 
   const tasksPerPage = 9;
@@ -36,7 +38,9 @@ const Dashboard = () => {
   const endIndex = startIndex + tasksPerPage;
   const visibleTasks = tasks?.slice(startIndex, endIndex);
 
-  const handleCreateClick = () => {};
+  const handleCreateClick = () => {
+    navigate('/dashboard/new-task')
+  };
 
   const handlePageChange = (event, value) => {
     setPage(value);
