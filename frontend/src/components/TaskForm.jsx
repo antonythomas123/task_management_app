@@ -74,7 +74,7 @@ const TaskForm = () => {
                 <CustomTextField
                   label="Description"
                   multiline={true}
-                  minRows={4}
+                  minRows={3}
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 12 }} sx={{ display: "flex" }}>
