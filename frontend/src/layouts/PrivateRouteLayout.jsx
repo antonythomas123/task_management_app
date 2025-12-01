@@ -1,11 +1,12 @@
 import React from "react";
 import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { Box, styled } from "@mui/material";
 
 const Container = styled(Box)(({ theme }) => ({
   height: "100%",
   minHeight: "100%",
+  position: 'relative',
   padding: theme.spacing(2),
   [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(4),
@@ -26,7 +27,7 @@ const Container = styled(Box)(({ theme }) => ({
   },
 }));
 
-const PrivateRouteLayout = ({ children }) => {
+const PrivateRouteLayout = () => {
   const isLoggedIn = true;
 
   const navigate = useNavigate();
@@ -35,9 +36,11 @@ const PrivateRouteLayout = ({ children }) => {
 
   return (
     <>
-      <Navbar title={"Task Management"} isLoggedIn={isLoggedIn}/>
+      <Navbar title={"Task Management"} isLoggedIn={isLoggedIn} />
 
-      <Container>{children}</Container>
+      <Container>
+        <Outlet />
+      </Container>
     </>
   );
 };
