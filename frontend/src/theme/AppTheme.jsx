@@ -1,6 +1,7 @@
 import React from "react";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { colorSchemes, typography, shadows, shape } from "./primitives";
+import { formInputCustomizations } from "./customizations/formInput";
 
 const AppTheme = ({ children }) => {
   const theme = createTheme({
@@ -11,7 +12,10 @@ const AppTheme = ({ children }) => {
     colorSchemes,
     typography,
     shadows, 
-    shape
+    shape,
+    components: {
+      ...formInputCustomizations
+    }
   });
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;

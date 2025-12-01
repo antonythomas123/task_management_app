@@ -17,13 +17,6 @@ import CustomTextField from "./CustomTextField";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 
-const Header = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "space-between",
-  gap: theme.spacing(2),
-}));
-
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -49,10 +42,7 @@ const TaskForm = () => {
   const navigate = useNavigate();
   return (
     <Box sx={{ mt: 6, display: "flex", flexDirection: "column", gap: "14px" }}>
-      <Header>
-        <Typography variant="h4">{"Add a new task"}</Typography>
-      </Header>
-
+    
       <Card>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <Typography variant="h5">Add a new task</Typography>
@@ -69,14 +59,14 @@ const TaskForm = () => {
           //   onReset={handleReset}
           sx={{
             width: "100%",
-            mt: 2,
+            mt: 4,
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: "20px",
           }}
         >
           <FormGroup>
-            <Grid container spacing={2} sx={{ mb: 2, width: "100%" }}>
+            <Grid container spacing={6} sx={{ mb: 2, width: "100%" }}>
               <Grid size={{ xs: 12, sm: 12 }} sx={{ display: "flex" }}>
                 <CustomTextField label={"Title"} />
               </Grid>
