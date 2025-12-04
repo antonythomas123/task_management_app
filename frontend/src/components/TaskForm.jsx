@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   styled,
@@ -12,16 +12,18 @@ import {
   MenuItem,
   Stack,
   Button,
+  FormHelperText,
+  Snackbar,
 } from "@mui/material";
 import CustomTextField from "./CustomTextField";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { createTask } from "../utils/interceptor";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignSelf: "center",
-  width: "100%",
   padding: theme.spacing(4),
   gap: theme.spacing(2),
   margin: "auto",
@@ -40,9 +42,74 @@ const Card = styled(MuiCard)(({ theme }) => ({
 
 const TaskForm = () => {
   const navigate = useNavigate();
+
+  const [fields, setFields] = useState({
+    title: "",
+    description: "",
+    status: "",
+  });
+
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+    status: "",
+  });
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackBarContent, setSnackBarContent] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFields((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors({ ...errors, [name]: "" });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let newErrors = {};
+
+    if (!fields.title.trim()) {
+      newErrors.title = "Field cannot be empty";
+    }
+    if (!fields.description.trim()) {
+      newErrors.description = "Field cannot be empty";
+    }
+
+    if (!fields.status.trim()) {
+      newErrors.status = "Field cannnot be empty";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      try {
+        const payload = {
+          title: fields?.title || "",
+          description: fields?.description || "",
+          status: fields?.status || "",
+        };
+
+        const res = await createTask(payload);
+
+        if (res) {
+          setSnackBarContent("Task added successfully !");
+          setOpenSnackbar(true);
+        }
+      } catch (e) {
+        console.log(e);
+        setSnackBarContent("Task is not added. Please try again!");
+        setOpenSnackbar(true);
+      }
+    }
+  };
+
   return (
-    <Box sx={{ mt: 6, display: "flex", flexDirection: "column", gap: "14px" }}>
-    
+    <Box sx={{ mt: 6, display: "flex", flexDirection: "column" }}>
       <Card>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <Typography variant="h5">Add a new task</Typography>
@@ -53,10 +120,9 @@ const TaskForm = () => {
 
         <Box
           component="form"
-          //   onSubmit={handleSubmit}
+          onSubmit={handleSubmit}
           noValidate
           autoComplete="off"
-          //   onReset={handleReset}
           sx={{
             width: "100%",
             mt: 4,
@@ -67,31 +133,64 @@ const TaskForm = () => {
         >
           <FormGroup>
             <Grid container spacing={6} sx={{ mb: 2, width: "100%" }}>
-              <Grid size={{ xs: 12, sm: 12 }} sx={{ display: "flex" }}>
-                <CustomTextField label={"Title"} />
+              <Grid
+                size={{ xs: 12, sm: 12 }}
+                sx={{ display: "flex", flexDirection: "column" }}
+              >
+                <CustomTextField
+                  label={"Title"}
+                  name={"title"}
+                  value={fields?.title}
+                  onChange={handleChange}
+                  error={errors?.title}
+                />
+                <FormHelperText error={Boolean(errors?.title)}>
+                  {errors?.title}
+                </FormHelperText>
               </Grid>
-              <Grid size={{ xs: 12, sm: 12 }} sx={{ display: "flex" }}>
+              <Grid
+                size={{ xs: 12, sm: 12 }}
+                sx={{ display: "flex", flexDirection: "column" }}
+              >
                 <CustomTextField
                   label="Description"
                   multiline={true}
                   minRows={3}
+                  name={"description"}
+                  value={fields?.description}
+                  onChange={handleChange}
+                  error={errors?.description}
                 />
+                <FormHelperText error={Boolean(errors?.description)}>
+                  {errors?.description}
+                </FormHelperText>
               </Grid>
-              <Grid size={{ xs: 12, sm: 12 }} sx={{ display: "flex" }}>
+              <Grid
+                size={{ xs: 12, sm: 12 }}
+                sx={{ display: "flex", flexDirection: "column" }}
+              >
                 <FormControl fullWidth>
                   <InputLabel id="status">Status</InputLabel>
-                  <Select>
+                  <Select
+                    value={fields?.status}
+                    onChange={handleChange}
+                    name="status"
+                    error={errors?.status}
+                  >
                     <MenuItem value="PENDING">Pending</MenuItem>
                     <MenuItem value="COMPLETED">Completed</MenuItem>
                   </Select>
                 </FormControl>
+                <FormHelperText error={Boolean(errors?.status)}>
+                  {errors?.status}
+                </FormHelperText>
               </Grid>
             </Grid>
           </FormGroup>
 
           <Stack direction={"row"} spacing={2} justifyContent={"space-between"}>
             <Button
-              variant="contained"
+              variant="outlined"
               startIcon={<ArrowBack />}
               onClick={() => navigate("/dashboard")}
             >
@@ -104,6 +203,14 @@ const TaskForm = () => {
           </Stack>
         </Box>
       </Card>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={openSnackbar}
+        onClose={() => setOpenSnackbar((prev) => !prev)}
+        message={snackBarContent}
+        autoHideDuration={5000}
+      />
     </Box>
   );
 };
