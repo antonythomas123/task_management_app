@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router";
 import { FormHelperText } from "@mui/material";
 import { signup } from "../utils/interceptor";
 import { AuthContext } from "../contexts/AuthContext";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -48,6 +49,7 @@ function SignUp() {
     password: "",
     api_error: "",
   });
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -115,6 +117,7 @@ function SignUp() {
         component="form"
         sx={{ display: "flex", flexDirection: "column", gap: 2 }}
         onSubmit={(e) => handleSignUp(e)}
+        autoComplete="off"
       >
         <FormControl>
           <FormLabel htmlFor="fullname">Full Name</FormLabel>
@@ -152,7 +155,9 @@ function SignUp() {
             onChange={handleChange}
             value={fields?.password}
             error={errors?.password}
-            type={"password"}
+            type={isPasswordVisible ? "text" : "password"}
+            endIcon={isPasswordVisible ? <VisibilityOff /> : <Visibility />}
+            onIconClick={() => setIsPasswordVisible((prev) => !prev)}
           />
           <FormHelperText error={Boolean(errors?.password)}>
             {errors?.password}
@@ -160,7 +165,9 @@ function SignUp() {
         </FormControl>
 
         {errors?.api_error && (
-          <p style={{ color: "red", fontSize: "12px", textAlign: 'center' }}>{errors?.api_error}</p>
+          <p style={{ color: "red", fontSize: "12px", textAlign: "center" }}>
+            {errors?.api_error}
+          </p>
         )}
 
         <Button type="submit" fullWidth variant="contained">

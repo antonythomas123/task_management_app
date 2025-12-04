@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 import React from "react";
 
 const CustomTextField = ({
@@ -11,6 +11,8 @@ const CustomTextField = ({
   value,
   onChange,
   error,
+  endIcon,
+  onIconClick,
 }) => {
   return (
     <TextField
@@ -24,6 +26,15 @@ const CustomTextField = ({
       value={value}
       onChange={onChange}
       error={error}
+      autoComplete="off"
+      inputProps={{ autoComplete: "off" }}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton onClick={() => onIconClick()}>{endIcon}</IconButton>
+          </InputAdornment>
+        ),
+      }}
     />
   );
 };
