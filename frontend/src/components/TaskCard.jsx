@@ -49,6 +49,8 @@ export const StatusChip = styled(Chip)(({ theme, status }) => ({
 }));
 
 function TaskCard({ title, description, date, status }) {
+  const isAdmin = localStorage.getItem("user")?.role === "admin";
+
   return (
     <Card>
       <CardHeader sx={{ padding: 2 }}>
@@ -97,9 +99,11 @@ function TaskCard({ title, description, date, status }) {
             <Edit fontSize="small" />
           </IconButton>
 
-          <IconButton size="small" sx={{ color: "#ef4444" }}>
-            <Delete fontSize="small" />
-          </IconButton>
+          {isAdmin && (
+            <IconButton size="small" sx={{ color: "#ef4444" }}>
+              <Delete fontSize="small" />
+            </IconButton>
+          )}
         </Box>
       </Box>
     </Card>

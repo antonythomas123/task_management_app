@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
@@ -8,10 +8,10 @@ import {
   Typography,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { tasks } from "../data/tasks";
 import moment from "moment";
 import TaskCard from "../components/TaskCard";
 import { useNavigate } from "react-router";
+import { getTasks } from "../utils/interceptor";
 
 const Header = styled("div")(({ theme }) => ({
   display: "flex",
@@ -29,22 +29,43 @@ const HeaderToolbar = styled("div")(({ theme }) => ({
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [page, setPage] = React.useState(1);
 
   const tasksPerPage = 9;
 
-  const totalPages = Math.ceil(tasks?.length / tasksPerPage);
-  const startIndex = (page - 1) * tasksPerPage;
-  const endIndex = startIndex + tasksPerPage;
-  const visibleTasks = tasks?.slice(startIndex, endIndex);
+  const [page, setPage] = React.useState(1);
+  const [tasks, setTasks] = React.useState([]);
+  const [totalPages, setTotalPages] = React.useState(1);
 
   const handleCreateClick = () => {
-    navigate('/dashboard/new-task')
+    navigate("/dashboard/new-task");
   };
 
   const handlePageChange = (event, value) => {
     setPage(value);
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const getAllTasks = async () => {
+      try {
+        const res = await getTasks({ page, limit: tasksPerPage });
+
+        if (isMounted) {
+          setTasks(res?.data?.tasks);
+          setTotalPages(res?.data?.pagination?.pages);
+        }
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    getAllTasks();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [page]);
 
   return (
     <Box sx={{ mt: 8 }}>
@@ -62,7 +83,7 @@ const Dashboard = () => {
       </Header>
 
       <Grid container spacing={2} sx={{ my: 2 }}>
-        {visibleTasks.map((task) => (
+        {tasks?.map((task) => (
           <Grid key={task.id} size={{ xs: 12, sm: 6, md: 4 }}>
             <TaskCard
               title={task.title}

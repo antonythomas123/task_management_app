@@ -99,6 +99,11 @@ const TaskForm = () => {
         if (res) {
           setSnackBarContent("Task added successfully !");
           setOpenSnackbar(true);
+          setFields({
+            title: "",
+            description: "",
+            status: "",
+          });
         }
       } catch (e) {
         console.log(e);
