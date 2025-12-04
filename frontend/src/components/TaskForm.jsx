@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   styled,
@@ -17,8 +17,8 @@ import {
 } from "@mui/material";
 import CustomTextField from "./CustomTextField";
 import { ArrowBack } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import { createTask } from "../utils/interceptor";
+import { useNavigate, useParams } from "react-router-dom";
+import { createTask, getTaskById, updateTask } from "../utils/interceptor";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -42,6 +42,9 @@ const Card = styled(MuiCard)(({ theme }) => ({
 
 const TaskForm = () => {
   const navigate = useNavigate();
+
+  const { id } = useParams();
+  const isEdit = Boolean(id);
 
   const [fields, setFields] = useState({
     title: "",
@@ -73,54 +76,81 @@ const TaskForm = () => {
 
     let newErrors = {};
 
-    if (!fields.title.trim()) {
-      newErrors.title = "Field cannot be empty";
-    }
-    if (!fields.description.trim()) {
+    if (!fields.title.trim()) newErrors.title = "Field cannot be empty";
+    if (!fields.description.trim())
       newErrors.description = "Field cannot be empty";
-    }
-
-    if (!fields.status.trim()) {
-      newErrors.status = "Field cannnot be empty";
-    }
+    if (!fields.status.trim()) newErrors.status = "Field cannot be empty";
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        const payload = {
-          title: fields?.title || "",
-          description: fields?.description || "",
-          status: fields?.status || "",
-        };
+    if (Object.keys(newErrors).length !== 0) return;
 
-        const res = await createTask(payload);
+    const payload = {
+      title: fields.title,
+      description: fields.description,
+      status: fields.status,
+    };
 
-        if (res) {
-          setSnackBarContent("Task added successfully !");
-          setOpenSnackbar(true);
-          setFields({
-            title: "",
-            description: "",
-            status: "",
-          });
-        }
-      } catch (e) {
-        console.log(e);
-        setSnackBarContent("Task is not added. Please try again!");
-        setOpenSnackbar(true);
+    try {
+      if (isEdit) {
+        await updateTask(id, payload);
+        setSnackBarContent("Task updated successfully!");
+      } else {
+        await createTask(payload);
+        setSnackBarContent("Task added successfully!");
       }
+
+      setOpenSnackbar(true);
+
+      if (!isEdit) {
+        setFields({ title: "", description: "", status: "" });
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (e) {
+      console.log(e);
+      setSnackBarContent("An error occurred. Please try again!");
+      setOpenSnackbar(true);
     }
   };
+
+  useEffect(() => {
+    if (!isEdit) return;
+
+    let isMounted = true;
+
+    (async () => {
+      try {
+        const { data } = await getTaskById(id);
+        if (isMounted) {
+          setFields({
+            title: data.title,
+            description: data.description,
+            status: data.status,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isEdit, id]);
 
   return (
     <Box sx={{ mt: 6, display: "flex", flexDirection: "column" }}>
       <Card>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <Typography variant="h5">Add a new task</Typography>
-          <Typography variant="h6">
-            Fill out the form below to create a new task
+          <Typography variant="h5">
+            {isEdit ? `Edit ${fields?.title}` : "Add a new task"}
           </Typography>
+          {!isEdit && (
+            <Typography variant="h6">
+              Fill out the form below to create a new task
+            </Typography>
+          )}
         </Box>
 
         <Box
@@ -203,7 +233,7 @@ const TaskForm = () => {
             </Button>
 
             <Button variant="contained" type="submit" size="large">
-              Add
+              {isEdit ? "Edit" : "Add"}
             </Button>
           </Stack>
         </Box>

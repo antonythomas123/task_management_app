@@ -86,6 +86,7 @@ const Dashboard = () => {
         {tasks?.map((task) => (
           <Grid key={task.id} size={{ xs: 12, sm: 6, md: 4 }}>
             <TaskCard
+              id={task?._id}
               title={task.title}
               description={task.description}
               date={moment(task.created_date).format("DD MMMM YYYY")}

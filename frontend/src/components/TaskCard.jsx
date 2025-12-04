@@ -3,6 +3,7 @@ import { styled, Card as MuiCard, Chip, Box } from "@mui/material";
 import { CalendarToday, Edit, Delete } from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
+import { useNavigate } from "react-router";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -48,8 +49,10 @@ export const StatusChip = styled(Chip)(({ theme, status }) => ({
   }),
 }));
 
-function TaskCard({ title, description, date, status }) {
+function TaskCard({ id, title, description, date, status }) {
   const isAdmin = localStorage.getItem("user")?.role === "admin";
+
+  const navigate = useNavigate();
 
   return (
     <Card>
@@ -95,7 +98,11 @@ function TaskCard({ title, description, date, status }) {
         </Box>
 
         <Box display="flex" alignItems="center" gap={1}>
-          <IconButton size="small" sx={{ color: "#94a3b8" }}>
+          <IconButton
+            size="small"
+            sx={{ color: "#94a3b8" }}
+            onClick={() => navigate(`/dashboard/edit-task/${id}`)}
+          >
             <Edit fontSize="small" />
           </IconButton>
 

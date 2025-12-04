@@ -22,6 +22,7 @@ const Routes = () => {
       children: [
         { index: true, Component: Dashboard },
         { path: "new-task", Component: TaskForm },
+        { path: "edit-task/:id", Component: TaskForm },
       ],
     },
   ]);
