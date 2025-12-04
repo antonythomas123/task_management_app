@@ -17,7 +17,7 @@ API.interceptors.request.use((config) => {
 export const signup = (data) => API.post("/auth/signup", data);
 
 
-export const login = (data) => API.post("/auth/login", data);
+export const signin = (data) => API.post("/auth/login", data);
 
 export const getTasks = (params) => API.get("/tasks", { params });
 export const createTask = (data) => API.post("/tasks", data);

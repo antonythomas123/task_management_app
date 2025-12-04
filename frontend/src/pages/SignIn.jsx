@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import CustomTextField from "../components/CustomTextField";
 import { Link, useNavigate } from "react-router";
 import {
@@ -10,7 +10,10 @@ import {
   FormLabel,
   styled,
   Typography,
+  FormHelperText,
 } from "@mui/material";
+import { signin } from "../utils/interceptor";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -34,6 +37,63 @@ const Card = styled(MuiCard)(({ theme }) => ({
 const SignIn = () => {
   const navigate = useNavigate();
 
+  const { login } = useContext(AuthContext);
+
+  const [fields, setFields] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFields((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors({ ...errors, [name]: "" });
+  };
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    setErrors({ api_error: "" });
+
+    let newErrors = {};
+
+    if (!fields.email.trim()) {
+      newErrors.email = "Field cannot be empty";
+    }
+    if (!fields.password.trim()) {
+      newErrors.password = "Field cannot be empty";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      try {
+        const payload = {
+          email: fields?.email,
+          password: fields?.password,
+        };
+        const res = await signin(payload);
+
+        if (res) {
+          login(res?.data?.user, res?.data?.token);
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        setErrors({
+          api_error: error?.response?.data?.message || "",
+        });
+      }
+    }
+  };
+
   return (
     <Card variant="outlined">
       <Typography
@@ -46,7 +106,7 @@ const SignIn = () => {
 
       <Box
         component={"form"}
-        onSubmit={() => navigate("/dashboard")}
+        onSubmit={handleSignIn}
         noValidate
         sx={{
           display: "flex",
@@ -57,19 +117,42 @@ const SignIn = () => {
       >
         <FormControl>
           <FormLabel htmlFor="email">Email</FormLabel>
-          <CustomTextField name={"email"} placeholder={"johndoe@gmail.com"} />
+          <CustomTextField
+            name={"email"}
+            placeholder={"johndoe@gmail.com"}
+            value={fields?.email}
+            onChange={handleChange}
+            error={errors?.email}
+          />
+          <FormHelperText error={Boolean(errors?.email)}>
+            {errors?.email}
+          </FormHelperText>
         </FormControl>
 
         <FormControl>
           <FormLabel htmlFor="password">Password</FormLabel>
-          <CustomTextField placeholder="••••••" type={"password"} />
+          <CustomTextField
+            placeholder="••••••"
+            type={"password"}
+            name={"password"}
+            value={fields?.password}
+            error={errors?.password}
+            onChange={handleChange}
+          />
+          <FormHelperText error={Boolean(errors?.password)}>
+            {errors?.password}
+          </FormHelperText>
         </FormControl>
 
+        {errors?.api_error && (
+          <p style={{ color: "red", fontSize: "12px", textAlign: "center" }}>
+            {errors?.api_error}
+          </p>
+        )}
         <Button
           type="submit"
           fullWidth
           variant="contained"
-          //   onClick={validateInputs}
         >
           Sign in
         </Button>
