@@ -36,6 +36,21 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
+router.get("/:id", protect, async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.json(task);
+  } catch (error) {
+    console.error("Error fetching task:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 router.post("/", protect, async (req, res) => {
   try {
     const { title, description, status } = req.body;
@@ -91,5 +106,4 @@ router.delete("/:id", protect, adminOnly, async (req, res) => {
   }
 });
 
-
-export default router
+export default router;
