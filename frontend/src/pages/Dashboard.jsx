@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Box,
   Button,
@@ -44,28 +44,40 @@ const Dashboard = () => {
     setPage(value);
   };
 
+  const fetchTasksFromAPI = useCallback(async () => {
+    return await getTasks({ page, limit: tasksPerPage });
+  }, [page]);
+
+  const handleRefreshAfterDelete = useCallback(async () => {
+    try {
+      const res = await fetchTasksFromAPI();
+      setTasks(res?.data?.tasks);
+      setTotalPages(res?.data?.pagination?.pages);
+    } catch (err) {
+      console.error("Error updating tasks:", err);
+    }
+  }, [fetchTasksFromAPI]);
+
   useEffect(() => {
     let isMounted = true;
 
-    const getAllTasks = async () => {
+    (async () => {
       try {
-        const res = await getTasks({ page, limit: tasksPerPage });
+        const res = await fetchTasksFromAPI();
 
         if (isMounted) {
-          setTasks(res?.data?.tasks);
-          setTotalPages(res?.data?.pagination?.pages);
+          setTasks(res?.data?.tasks || []);
+          setTotalPages(res?.data?.pagination?.pages || 1);
         }
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
-    };
-
-    getAllTasks();
+    })();
 
     return () => {
       isMounted = false;
     };
-  }, [page]);
+  }, [fetchTasksFromAPI]);
 
   return (
     <Box sx={{ mt: 8 }}>
@@ -91,6 +103,7 @@ const Dashboard = () => {
               description={task.description}
               date={moment(task.created_date).format("DD MMMM YYYY")}
               status={task.status}
+              onDeleted={handleRefreshAfterDelete}
             />
           </Grid>
         ))}

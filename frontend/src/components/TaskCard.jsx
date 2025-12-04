@@ -4,6 +4,7 @@ import { CalendarToday, Edit, Delete } from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "react-router";
+import { deleteTask } from "../utils/interceptor";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -49,10 +50,19 @@ export const StatusChip = styled(Chip)(({ theme, status }) => ({
   }),
 }));
 
-function TaskCard({ id, title, description, date, status }) {
+function TaskCard({ id, title, description, date, status, onDeleted }) {
   const isAdmin = localStorage.getItem("user")?.role === "admin";
 
   const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    try {
+      await deleteTask(id);
+      if (onDeleted) onDeleted(id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Card>
@@ -107,7 +117,11 @@ function TaskCard({ id, title, description, date, status }) {
           </IconButton>
 
           {isAdmin && (
-            <IconButton size="small" sx={{ color: "#ef4444" }}>
+            <IconButton
+              size="small"
+              sx={{ color: "#ef4444" }}
+              onClick={handleDelete}
+            >
               <Delete fontSize="small" />
             </IconButton>
           )}
