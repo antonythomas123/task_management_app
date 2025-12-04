@@ -18,6 +18,20 @@ export const formInputCustomizations = {
     styleOverrides: {
       root: ({ theme }) => ({
         position: "relative",
+
+        [`& .${outlinedInputClasses.root}.Mui-error`]: {
+          borderColor: theme.palette.error.main,
+          outline: `3px solid ${alpha(theme.palette.error.main, 0.32)}`,
+        },
+
+        [`& .${inputBaseClasses.input}.Mui-error`]: {
+          caretColor: theme.palette.error.main,
+        },
+
+        [`& .${formHelperTextClasses.root}.Mui-error`]: {
+          color: theme.palette.error.main,
+        },
+
         [`& .${outlinedInputClasses.root}`]: {
           border: `1px solid ${(theme.vars || theme).palette.divider}`,
           borderRadius: 8,

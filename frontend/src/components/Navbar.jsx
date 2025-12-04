@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -11,6 +11,7 @@ import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
   borderWidth: 0,
@@ -34,6 +35,8 @@ const LogoContainer = styled("div")({
 const Navbar = ({ logo, title, isLoggedIn = false }) => {
   const theme = useTheme();
 
+  const { logout } = useContext(AuthContext);
+
   const navigate = useNavigate();
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -44,6 +47,7 @@ const Navbar = ({ logo, title, isLoggedIn = false }) => {
 
   const handleLogout = () => {
     setAnchorElUser(null);
+    logout();
     navigate("/sign-in");
   };
 
