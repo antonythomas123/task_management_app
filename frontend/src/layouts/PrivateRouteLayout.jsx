@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import Navbar from "../components/Navbar";
-import { Outlet, useNavigate } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import { Box, styled } from "@mui/material";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Container = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -29,11 +30,11 @@ const Container = styled(Box)(({ theme }) => ({
 }));
 
 const PrivateRouteLayout = () => {
-  const isLoggedIn = true;
+  const { user } = useContext(AuthContext);
 
-  const navigate = useNavigate();
-
-  if (!isLoggedIn) return navigate("/sign-in");
+  if (!user) {
+    return <Navigate to="/sign-in" replace />;
+  }
 
   return (
     <Box
@@ -44,7 +45,7 @@ const PrivateRouteLayout = () => {
         width: "100%",
       }}
     >
-      <Navbar title={"Task Management"} isLoggedIn={isLoggedIn} />
+      <Navbar title={"Task Management"} isLoggedIn={user ? true : false} />
 
       <Container
         sx={{

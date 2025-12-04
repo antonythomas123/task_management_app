@@ -10,7 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
   borderWidth: 0,

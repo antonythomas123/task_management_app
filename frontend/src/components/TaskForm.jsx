@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import CustomTextField from "./CustomTextField";
 import { ArrowBack } from "@mui/icons-material";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
