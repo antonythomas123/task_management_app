@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { styled, Card as MuiCard, Chip, Box } from "@mui/material";
 import { CalendarToday, Edit, Delete } from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "react-router";
-import { deleteTask } from "../utils/interceptor";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -50,19 +50,10 @@ export const StatusChip = styled(Chip)(({ theme, status }) => ({
   }),
 }));
 
-function TaskCard({ id, title, description, date, status, onDeleted }) {
-  const isAdmin = localStorage.getItem("user")?.role === "admin";
+function TaskCard({ id, title, description, date, status, onDeleteClick }) {
+  const { user } = useContext(AuthContext);
 
   const navigate = useNavigate();
-
-  const handleDelete = async () => {
-    try {
-      await deleteTask(id);
-      if (onDeleted) onDeleted(id);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <Card>
@@ -113,16 +104,16 @@ function TaskCard({ id, title, description, date, status, onDeleted }) {
             sx={{ color: "#94a3b8" }}
             onClick={() => navigate(`/dashboard/edit-task/${id}`)}
           >
-            <Edit fontSize="small" />
+            <Edit sx={{ fontSize: 25 }} />
           </IconButton>
 
-          {isAdmin && (
+          {user?.role?.toLowerCase() === "admin" && (
             <IconButton
               size="small"
               sx={{ color: "#ef4444" }}
-              onClick={handleDelete}
+              onClick={() => onDeleteClick(id)}
             >
-              <Delete fontSize="small" />
+              <Delete sx={{ fontSize: 25 }} />
             </IconButton>
           )}
         </Box>

@@ -10,7 +10,7 @@ import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import { Link, useNavigate } from "react-router";
-import { FormHelperText } from "@mui/material";
+import { Checkbox, FormControlLabel, FormHelperText } from "@mui/material";
 import { signup } from "../utils/interceptor";
 import { AuthContext } from "../contexts/AuthContext";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -42,6 +42,7 @@ function SignUp() {
     fullname: "",
     email: "",
     password: "",
+    role: ''
   });
   const [errors, setErrors] = useState({
     fullname: "",
@@ -84,6 +85,7 @@ function SignUp() {
           name: fields?.fullname,
           email: fields?.email,
           password: fields?.password,
+          role: fields?.role
         };
 
         const res = await signup(payload);
@@ -162,6 +164,23 @@ function SignUp() {
           <FormHelperText error={Boolean(errors?.password)}>
             {errors?.password}
           </FormHelperText>
+        </FormControl>
+
+        <FormControl>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={fields?.role === "admin"}
+                onChange={(e) =>
+                  setFields({
+                    ...fields,
+                    role: e.target.checked ? "admin" : "user",
+                  })
+                }
+              />
+            }
+            label="Are you an admin?"
+          />
         </FormControl>
 
         {errors?.api_error && (

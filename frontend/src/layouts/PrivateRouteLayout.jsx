@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import { Navigate, Outlet } from "react-router";
+import { Navigate, Outlet, useNavigate } from "react-router";
 import { Box, styled } from "@mui/material";
 import { AuthContext } from "../contexts/AuthContext";
+import { getUserInfo } from "../utils/interceptor";
 
 const Container = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -30,9 +31,31 @@ const Container = styled(Box)(({ theme }) => ({
 }));
 
 const PrivateRouteLayout = () => {
-  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { user, token, updateUser } = useContext(AuthContext);
 
-  if (!user) {
+  useEffect(() => {
+    if (!token) {
+      navigate("/sign-in");
+      return;
+    }
+
+    const fetchUser = async () => {
+      try {
+        const res = await getUserInfo();
+        updateUser(res.data); // stores role + updated info
+      } catch (err) {
+        console.log("Auth failed, logging out...", err);
+        navigate("/sign-in");
+      }
+    };
+
+    if (!user) {
+      fetchUser();
+    }
+  }, [token, user, navigate, updateUser]);
+
+  if (!user || !token) {
     return <Navigate to="/sign-in" replace />;
   }
 
